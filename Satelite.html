@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DigiHair Satélite - Terminal Empleado</title>
+
+  <!-- PWA & Mobile Meta -->
+  <meta name="theme-color" content="#1d4ed8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Satélite DigiHair">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Fuentes e Iconos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --primary-blue: #1d4ed8;
+      --primary-dark: #0f172a;
+      --accent-red: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-body);
+      color: var(--text-main);
+      padding-bottom: 90px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Cinta de barbería superior */
+    .barber-stripe {
+      height: 6px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #dc2626,
+        #dc2626 15px,
+        #ffffff 15px,
+        #ffffff 30px,
+        #1d4ed8 30px,
+        #1d4ed8 45px,
+        #ffffff 45px,
+        #ffffff 60px
+      );
+      width: 100%;
+    }
+
+    /* Header del Empleado */
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 16px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .staff-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1d4ed8, #0284c7);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+    }
+
+    .staff-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .staff-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .salon-name {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    .status-pill {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-filter-period {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-filter-period:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .btn-filter-period.active {
+      background: #1d4ed8;
+      border-color: #1e40af;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.3);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Contenido */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Pestañas */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Métricas / Resumen rápido */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-card.highlight {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-color: #bfdbfe;
+    }
+    .stat-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-blue);
+    }
+    .stat-val.money {
+      color: #15803d;
+    }
+
+    /* Lista de Trabajos y Citas */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .job-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .job-card.completed {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      opacity: 0.9;
+    }
+    .job-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: var(--primary-blue);
+    }
+    .job-card.completed::before {
+      background: var(--success);
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .client-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .service-tag {
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .job-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .job-details span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .job-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .earnings-box {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .earnings-box strong {
+      font-size: 16px;
+      color: #15803d;
+      font-weight: 800;
+    }
+
+    .btn-complete {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 8px rgba(22, 163, 74, 0.3);
+      transition: all 0.2s;
+    }
+    .btn-complete:active {
+      transform: scale(0.96);
+    }
+    .btn-completed-badge {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Barra de Navegación Inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 45%;
+      padding: 6px 0;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .nav-btn.active {
+      color: var(--primary-blue);
+      background: #eff6ff;
+    }
+    .nav-btn i {
+      font-size: 18px;
+    }
+
+    /* Bloqueo / Inactivo */
+    .blocked-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0f172a;
+      color: #fff;
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+    .blocked-card {
+      background: #1e293b;
+      border: 1px solid #ef4444;
+      padding: 30px 24px;
+      border-radius: 20px;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+    }
+    .blocked-icon {
+      width: 70px;
+      height: 70px;
+      background: rgba(239, 68, 68, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #ef4444;
+      margin: 0 auto 16px auto;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state i {
+      font-size: 44px;
+      margin-bottom: 12px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de bloqueo si la terminal fue dada de baja -->
+  <div class="blocked-screen" id="blockedScreen">
+    <div class="blocked-card">
+      <div class="blocked-icon"><i class="fa-solid fa-ban"></i></div>
+      <h2 style="font-size:20px; margin-bottom:10px; color:#f87171;">Terminal Desactivada</h2>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.5; margin-bottom:20px;">
+        Esta estación satélite ha sido dada de baja o desvinculada por la administración del salón.
+      </p>
+      <div style="font-size:12px; color:#94a3b8; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:14px;">
+        Si consideras que es un error, contacta al encargado o dueño de tu estética.
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+        <p style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">
+          ¿Vas a abrir tu propio salón o quieres DigiHair en tu negocio?
+        </p>
+        <a href="https://wa.me/522441400016?text=Hola%2C%20usaba%20el%20sistema%20DigiHair%20como%20estilista%20y%20me%20interesa%20adquirir%20el%20programa%20para%20mi%20propio%20negocio" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:#fff; text-decoration:none; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:700;">
+          <i class="fa-brands fa-whatsapp"></i> Adquirir DigiHair: +52 244 140 0016
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="barber-stripe"></div>
+
+  <!-- Encabezado Móvil -->
+  <header>
+    <div class="staff-badge">
+      <div class="avatar-icon"><i class="fa-solid fa-scissors"></i></div>
+      <div class="staff-info">
+        <h1 id="staffNameHeader">Cargando...</h1>
+        <p><i class="fa-solid fa-store" style="font-size:11px;"></i> <span class="salon-name" id="salonNameHeader">DigiHair</span></p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span>En Vivo</span>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- PESTAÑA 1: MIS TURNOS DE HOY -->
+    <div class="tab-content active" id="tabTurnos">
+      
+      <!-- Resumen Rápido -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-title"><i class="fa-solid fa-list-check"></i> Turnos Asignados</span>
+          <span class="stat-val" id="statTurnosCount">0</span>
+        </div>
+        <div class="stat-card highlight">
+          <span class="stat-title"><i class="fa-solid fa-hand-holding-dollar"></i> Mi Ganancia Hoy</span>
+          <span class="stat-val money" id="statTodayEarnings">$0.00</span>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <span><i class="fa-solid fa-bell" style="color:var(--primary-blue);"></i> Servicios en Turno</span>
+        <button onclick="refreshData()" style="background:none; border:none; color:var(--primary-blue); font-size:13px; font-weight:700; cursor:pointer;">
+          <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+        </button>
+      </div>
+
+      <div id="jobsListContainer">
+        <!-- Render dinámico de citas asignadas -->
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: MI CARTERA Y COMISIONES -->
+    <div class="tab-content" id="tabCartera">
+      <div class="stats-row">
+        <div class="stat-card highlight">
+          <span class="stat-title"><i class="fa-solid fa-sack-dollar"></i> Total por Cobrar</span>
+          <span class="stat-val money" id="statPendingPayout">$0.00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title"><i class="fa-solid fa-circle-check"></i> Trabajos Hechos</span>
+          <span class="stat-val" id="statTotalDoneCount">0</span>
+        </div>
+      <!-- Filtro Dinámico de Fechas para Cartera del Empleado -->
+      <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px 14px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+        <div style="font-size: 13px; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-regular fa-calendar-days"></i> Periodo de Ganancias:
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="satFilterButtons">
+          <button type="button" class="btn-filter-period active" onclick="setSatPeriod('all')" id="satBtnAll">Todo</button>
+          <button type="button" class="btn-filter-period" onclick="setSatPeriod('today')" id="satBtnToday">Hoy</button>
+          <button type="button" class="btn-filter-period" onclick="setSatPeriod('week')" id="satBtnWeek">Esta Semana</button>
+          <button type="button" class="btn-filter-period" onclick="setSatPeriod('quincena')" id="satBtnQuincena">Esta Quincena</button>
+          <button type="button" class="btn-filter-period" onclick="setSatPeriod('month')" id="satBtnMonth">Este Mes</button>
+          <button type="button" class="btn-filter-period" onclick="setSatPeriod('custom')" id="satBtnCustom"><i class="fa-solid fa-sliders"></i> Rango</button>
+        </div>
+        <!-- Calendario dinámico para rango personalizado -->
+        <div id="satCustomDateRangeBox" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted);">
+            <span>Desde:</span>
+            <input type="date" id="satDateStart" style="padding: 6px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 12px;" onchange="applySatCustomRange()">
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted);">
+            <span>Hasta:</span>
+            <input type="date" id="satDateEnd" style="padding: 6px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 12px;" onchange="applySatCustomRange()">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <span><i class="fa-solid fa-receipt" style="color:var(--primary-blue);"></i> Registro de Trabajos</span>
+        <span id="satPeriodLabel" style="font-size:12px; color:var(--text-muted); font-weight:normal;"></span>
+      </div>
+
+      <div id="historyListContainer">
+        <!-- Historial de trabajos -->
+      </div>
+    <!-- Pie discreto con botón de contacto comercial para estilistas -->
+    <div style="margin-top: 30px; padding: 14px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+        DigiHair & Nails Satélite • Sistema para Salones y Barberías
+      </div>
+      <a href="https://wa.me/522441400016?text=Hola%2C%20soy%20estilista%20y%20me%20interesa%20informaci%C3%B3n%20para%20adquirir%20DigiHair%20para%20mi%20propio%20negocio" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #15803d; text-decoration: none; font-size: 12px; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px;">
+        <i class="fa-brands fa-whatsapp"></i> ¿Quieres DigiHair en tu salón? (+52 244 140 0016)
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Barra de navegación fija inferior -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="navBtnTurnos" onclick="switchTab('turnos')">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span>Turnos de Hoy</span>
+    </button>
+    <button class="nav-btn" id="navBtnCartera" onclick="switchTab('cartera')">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Mi Cartera</span>
+    </button>
+  </div>
+
+  <script>
+    // Parámetros pasados en la URL: ?staffId=xxx&name=xxx&salon=xxx
+    const urlParams = new URLSearchParams(window.location.search);
+    const staffId = urlParams.get('staffId');
+    const paramName = urlParams.get('name') || 'Estilista';
+    const paramSalon = urlParams.get('salon') || 'DigiHair Salón';
+
+    let currentStaff = null;
+    let clientsData = [];
+
+    function initSatellite() {
+      if (!staffId) {
+        showBlocked('No se proporcionó un identificador de terminal válido.');
+        return;
+      }
+
+      // Cargar personal desde almacenamiento compartido / central
+      const staffList = JSON.parse(localStorage.getItem('digihair_staff') || '[]');
+      currentStaff = staffList.find(s => s.id === staffId);
+
+      // Si el empleado fue borrado o no existe, bloquear inmediatamente
+      if (!currentStaff) {
+        showBlocked('Esta estación satélite fue dada de baja por el dueño del negocio.');
+        return;
+      }
+
+      // Actualizar encabezados
+      document.getElementById('staffNameHeader').innerText = currentStaff.name;
+      document.getElementById('salonNameHeader').innerText = paramSalon;
+
+      loadJobs();
+    }
+
+    function showBlocked(msg) {
+      const screen = document.getElementById('blockedScreen');
+      screen.style.display = 'flex';
+      if (msg) {
+        screen.querySelector('p').innerText = msg;
+      }
+    }
+
+    let satPeriod = 'all';
+    let satDateStart = '';
+    let satDateEnd = '';
+
+    window.setSatPeriod = function(period) {
+      satPeriod = period;
+      document.querySelectorAll('#satFilterButtons .btn-filter-period').forEach(b => b.classList.remove('active'));
+
+      const customBox = document.getElementById('satCustomDateRangeBox');
+      const startInp = document.getElementById('satDateStart');
+      const endInp = document.getElementById('satDateEnd');
+
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      if (period === 'today') {
+        document.getElementById('satBtnToday').classList.add('active');
+        customBox.style.display = 'none';
+        satDateStart = todayStr;
+        satDateEnd = todayStr;
+      } else if (period === 'week') {
+        document.getElementById('satBtnWeek').classList.add('active');
+        customBox.style.display = 'none';
+        const dayOfWeek = now.getDay() || 7;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - (dayOfWeek - 1));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        satDateStart = monday.toISOString().split('T')[0];
+        satDateEnd = sunday.toISOString().split('T')[0];
+      } else if (period === 'quincena') {
+        document.getElementById('satBtnQuincena').classList.add('active');
+        customBox.style.display = 'none';
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const day = now.getDate();
+        if (day <= 15) {
+          satDateStart = new Date(year, month, 1).toISOString().split('T')[0];
+          satDateEnd = new Date(year, month, 15).toISOString().split('T')[0];
+        } else {
+          const lastDay = new Date(year, month + 1, 0).getDate();
+          satDateStart = new Date(year, month, 16).toISOString().split('T')[0];
+          satDateEnd = new Date(year, month, lastDay).toISOString().split('T')[0];
+        }
+      } else if (period === 'month') {
+        document.getElementById('satBtnMonth').classList.add('active');
+        customBox.style.display = 'none';
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        satDateStart = new Date(year, month, 1).toISOString().split('T')[0];
+        satDateEnd = new Date(year, month, lastDay).toISOString().split('T')[0];
+      } else if (period === 'custom') {
+        document.getElementById('satBtnCustom').classList.add('active');
+        customBox.style.display = 'flex';
+        if (!startInp.value) startInp.value = todayStr;
+        if (!endInp.value) endInp.value = todayStr;
+        satDateStart = startInp.value;
+        satDateEnd = endInp.value;
+      } else {
+        document.getElementById('satBtnAll').classList.add('active');
+        customBox.style.display = 'none';
+        satDateStart = '';
+        satDateEnd = '';
+      }
+
+      loadJobs();
+    };
+
+    window.applySatCustomRange = function() {
+      satDateStart = document.getElementById('satDateStart').value;
+      satDateEnd = document.getElementById('satDateEnd').value;
+      loadJobs();
+    };
+
+    function isSatDateInRange(dateStr, start, end) {
+      if (!start && !end) return true;
+      if (!dateStr) return false;
+      const clean = dateStr.split('T')[0];
+      if (start && clean < start) return false;
+      if (end && clean > end) return false;
+      return true;
+    }
+
+    function loadJobs() {
+      // Re-verificar si el empleado sigue existiendo en el salón
+      const staffList = JSON.parse(localStorage.getItem('digihair_staff') || '[]');
+      const exists = staffList.some(s => s.id === staffId);
+      if (!exists) {
+        showBlocked('Esta estación satélite fue dada de baja por el dueño del salón.');
+        return;
+      }
+
+      clientsData = JSON.parse(localStorage.getItem('digihair_clients') || '[]');
+      const myWorks = clientsData.filter(c => c.staffId === staffId);
+
+      // Trabajos de hoy para Turnos
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayWorks = myWorks.filter(c => (c.date || '').startsWith(todayStr) || !c.date);
+      const todayEarnings = todayWorks.reduce((acc, c) => acc + (parseFloat(c.staffPayment) || 0), 0);
+
+      // Trabajos filtrados para Cartera
+      const filteredCarteraWorks = myWorks.filter(c => isSatDateInRange(c.date || todayStr, satDateStart, satDateEnd));
+      const pendingPayout = filteredCarteraWorks.filter(c => !c.isPaidToStaff).reduce((acc, c) => acc + (parseFloat(c.staffPayment) || 0), 0);
+
+      const lbl = document.getElementById('satPeriodLabel');
+      if (lbl) {
+        if (satDateStart && satDateEnd) {
+          lbl.innerText = `${satDateStart} al ${satDateEnd}`;
+        } else {
+          lbl.innerText = 'Histórico total';
+        }
+      }
+
+      document.getElementById('statTurnosCount').innerText = todayWorks.length;
+      document.getElementById('statTodayEarnings').innerText = '$' + todayEarnings.toFixed(2);
+      document.getElementById('statPendingPayout').innerText = '$' + pendingPayout.toFixed(2);
+      document.getElementById('statTotalDoneCount').innerText = filteredCarteraWorks.length;
+
+      renderTurnos(todayWorks);
+      renderCartera(filteredCarteraWorks);
+    }
+
+    function renderTurnos(works) {
+      const container = document.getElementById('jobsListContainer');
+      container.innerHTML = '';
+
+      if (works.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-calendar-check"></i>
+            <p><strong>No tienes servicios asignados en este momento.</strong></p>
+            <p style="font-size:13px; margin-top:4px;">Tu estación está conectada y lista para recibir las órdenes que te asigne recepción.</p>
+          </div>
+        `;
+        return;
+      }
+
+      works.forEach(w => {
+        const isDone = w.status === 'completado';
+        const card = document.createElement('div');
+        card.className = `job-card ${isDone ? 'completed' : ''}`;
+        card.innerHTML = `
+          <div class="job-header">
+            <div>
+              <div class="client-name">${escapeHtml(w.name)}</div>
+              <div class="service-tag">${escapeHtml(w.service)}</div>
+            </div>
+            ${isDone ? 
+              `<span class="btn-completed-badge"><i class="fa-solid fa-check"></i> Terminado</span>` : 
+              `<button class="btn-complete" onclick="markServiceCompleted('${w.id}')"><i class="fa-solid fa-check"></i> Terminar</button>`
+            }
+          </div>
+
+          <div class="job-details">
+            ${w.time ? `<span><i class="fa-regular fa-clock"></i> ${escapeHtml(w.time)}</span>` : ''}
+            ${w.phone ? `<span><i class="fa-solid fa-phone"></i> ${escapeHtml(w.phone)}</span>` : ''}
+            ${w.stationName ? `<span><i class="fa-solid fa-chair"></i> ${escapeHtml(w.stationName)}</span>` : ''}
+          </div>
+
+          <div class="job-footer">
+            <div class="earnings-box">
+              <span>Mi Comisión: </span>
+              <strong>$${(parseFloat(w.staffPayment) || 0).toFixed(2)}</strong>
+            </div>
+            <span style="font-size:12px; color:var(--text-muted);">${w.date || 'Hoy'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderCartera(works) {
+      const container = document.getElementById('historyListContainer');
+      container.innerHTML = '';
+
+      if (works.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-receipt"></i>
+            <p>Aún no hay trabajos registrados en tu historial.</p>
+          </div>
+        `;
+        return;
+      }
+
+      works.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'job-card completed';
+        card.innerHTML = `
+          <div class="job-header">
+            <div>
+              <div class="client-name">${escapeHtml(w.name)}</div>
+              <div class="service-tag">${escapeHtml(w.service)}</div>
+            </div>
+            <span style="font-size:12px; font-weight:700; color:${w.isPaidToStaff ? '#15803d' : '#d97706'};">
+              ${w.isPaidToStaff ? '<i class="fa-solid fa-circle-check"></i> Pagado' : '<i class="fa-regular fa-clock"></i> Pendiente'}
+            </span>
+          </div>
+          <div class="job-footer">
+            <div class="earnings-box">
+              <span>Comisión Ganada: </span>
+              <strong>$${(parseFloat(w.staffPayment) || 0).toFixed(2)}</strong>
+            </div>
+            <span style="font-size:12px; color:var(--text-muted);">${w.date || 'Fecha'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.markServiceCompleted = function(clientId) {
+      const idx = clientsData.findIndex(c => c.id === clientId);
+      if (idx !== -1) {
+        clientsData[idx].status = 'completado';
+        localStorage.setItem('digihair_clients', JSON.stringify(clientsData));
+        loadJobs();
+      }
+    };
+
+    window.refreshData = function() {
+      loadJobs();
+    };
+
+    window.switchTab = function(tab) {
+      const tabTurnos = document.getElementById('tabTurnos');
+      const tabCartera = document.getElementById('tabCartera');
+      const btnTurnos = document.getElementById('navBtnTurnos');
+      const btnCartera = document.getElementById('navBtnCartera');
+
+      if (tab === 'turnos') {
+        tabTurnos.classList.add('active');
+        tabCartera.classList.remove('active');
+        btnTurnos.classList.add('active');
+        btnCartera.classList.remove('active');
+      } else {
+        tabCartera.classList.add('active');
+        tabTurnos.classList.remove('active');
+        btnCartera.classList.add('active');
+        btnTurnos.classList.remove('active');
+      }
+    };
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Auto-refresco en vivo cada 10 segundos
+    setInterval(loadJobs, 10000);
+
+    initSatellite();
+  </script>
+</body>
+</html>
